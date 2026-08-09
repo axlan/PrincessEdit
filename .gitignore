@@ -6,6 +6,7 @@ levels
 *.ko
 *.obj
 *.elf
+editor
 
 # Precompiled Headers
 *.gch
