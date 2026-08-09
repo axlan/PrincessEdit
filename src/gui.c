@@ -23,6 +23,7 @@ SDL_Renderer *ScreenRenderer = NULL;
 SDL_Texture *PrincessIcon = NULL;
 SDL_Surface *WindowIcon = NULL;
 int ScreenWidth = 800, ScreenHeight = 600;
+int UIScale = 2;
 int Redraw = 1, RedrawMap = 1;
 FontSet MainFont, TinyFont, VeryTinyFont;
 int MapViewX = 10, MapViewY = 10, MapViewWidth = 20, MapViewHeight = 20, MapViewWidthP, MapViewHeightP;
@@ -89,6 +90,8 @@ int UpdateResizeDirections() {
   SDL_Rect Select1 = MakeSelectRect(CurLevelRect, 12);
   SDL_Rect Select2 = MakeSelectRect(CurLevelRect, 0);
   SDL_GetMouseState(&MouseX, &MouseY);
+  MouseX /= UIScale;
+  MouseY /= UIScale;
   if(IsInsideRect(MouseX, MouseY, Select1.x, Select1.y, Select1.w, Select1.h) &&
     !IsInsideRect(MouseX, MouseY, Select2.x, Select2.y, Select2.w, Select2.h)) {
     ResizeUp    = MouseY < Select2.y;
@@ -189,7 +192,7 @@ void StartGUI() {
   // tile picker stuff
   SDL_Texture *TPTexture;
 
-  window = SDL_CreateWindow(Temp, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, ScreenWidth, ScreenHeight, SDL_WINDOW_SHOWN| SDL_WINDOW_RESIZABLE);
+  window = SDL_CreateWindow(Temp, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, ScreenWidth, ScreenHeight, SDL_WINDOW_SHOWN| SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED);
   if(!window) {
      SDL_MessageBox(SDL_MESSAGEBOX_ERROR, "Error", NULL, "Window could not be created! SDL_Error: %s", SDL_GetError());
      return;
@@ -208,6 +211,7 @@ void StartGUI() {
     SDL_MessageBox(SDL_MESSAGEBOX_ERROR, "Error", NULL, "Rendering to a texture isn't supported");
     return;
   }
+  SDL_RenderSetScale(ScreenRenderer, (float)UIScale, (float)UIScale);
 
   // set window icon
   WindowIcon = SDL_LoadImage("data/icon.png", 0);
@@ -247,6 +251,8 @@ void StartGUI() {
         SDL_free(dropped_filedir);
         break;
       } else if(e.type == SDL_MOUSEMOTION) {
+        e.motion.x /= UIScale;
+        e.motion.y /= UIScale;
         SetACursor = 0;
         AvailableRect = NULL;
         if(!(SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT))) {
@@ -501,8 +507,8 @@ void StartGUI() {
       } else if(e.type == SDL_WINDOWEVENT) {
         switch(e.window.event) {
           case SDL_WINDOWEVENT_SIZE_CHANGED:
-            ScreenWidth = e.window.data1;
-            ScreenHeight = e.window.data2;
+            ScreenWidth = e.window.data1 / UIScale;
+            ScreenHeight = e.window.data2 / UIScale;
           case SDL_WINDOWEVENT_EXPOSED:
             Redraw = 1;
         }
@@ -531,9 +537,9 @@ void StartGUI() {
         TPRect.h = TPH;
         if(JustToggledTP) {
           if(TilePicker)
-            SDL_WarpMouseInWindow(window, TPRect.x+TPCursorX*TileW+TileW/2, TPRect.y+TPCursorY*TileH+TileH/2);
+            SDL_WarpMouseInWindow(window, (TPRect.x+TPCursorX*TileW+TileW/2)*UIScale, (TPRect.y+TPCursorY*TileH+TileH/2)*UIScale);
           else
-            SDL_WarpMouseInWindow(window, MapViewX+CursorX*TileW+TileW/2, MapViewY+CursorY*TileH+TileH/2);
+            SDL_WarpMouseInWindow(window, (MapViewX+CursorX*TileW+TileW/2)*UIScale, (MapViewY+CursorY*TileH+TileH/2)*UIScale);
           JustToggledTP = 0;
         }
 

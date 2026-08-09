@@ -328,6 +328,7 @@ extern int TileH;
 extern int CameraX;
 extern int CameraY;
 extern int ScreenWidth, ScreenHeight;
+extern int UIScale;
 extern SDL_Renderer *ScreenRenderer;
 
 extern SDL_Color FGColor;

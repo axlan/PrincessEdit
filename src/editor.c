@@ -27,9 +27,13 @@ SquirrelHook *AllMenuCommands = NULL;
 SquirrelHook *AllExportFormats = NULL;
 
 int main( int argc, char* args[] ) {
-  if(argc != 2) {
+  if(argc != 2 && argc != 3) {
      SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Open what level?");
      return 0;
+  }
+
+  if(argc == 3) {
+    UIScale = atoi(args[2]);
   }
 
   if(SDL_Init(SDL_INIT_VIDEO) < 0){
